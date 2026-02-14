@@ -7,18 +7,15 @@ import (
 
 )
 
-// const Url = "https://groupietrackers.herokuapp.com/api/artists"
-// const Urldt = "https://groupietrackers.herokuapp.com/api/dates"
+const Url = "https://groupietrackers.herokuapp.com/api/"
+
 type Artist struct {
-	ID             int      `json:"id"`
+	ID             int    
 	Image          string  ` json:"image"`
 	Name           string   `json:"name"`
 	Members        []string `json:"members"`
 	CreationDate   int      `json:"creationDate"`
 	FirstAlbum     string   `json:"firstAlbum"`
-	// locations      locations
-	// Dates          Dates
-	// Relation 	  Relation
 }
 
 type locations struct {
@@ -44,71 +41,76 @@ type Relation struct {
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
-// // FetchArtists fetches the list of artists from the external API.
-func FetchArtists(url string)([]Artist,error) {
-	resp, err := http.Get(url)
+type RelationResponse struct {
+	Index []Relation `json:"index"`
+}
+// FetchArtists fetches the list of artists from the external API.
+func FetchArtists()([]Artist,error) {
+	resp, err := http.Get(Url+"artists")
 	if err != nil {
-		// return nil,fmt.Errorf("failed to fetch artist %#v", err)
-		fmt.Println(err)
+		return nil,fmt.Errorf("failed to fetch artist %#v", err)
 	}
 	defer resp.Body.Close()
-	fmt.Println(resp.Body)
 	var artists []Artist
 	// Decode the JSON response into the artists slice
 	err = json.NewDecoder(resp.Body).Decode(&artists)
 	if err != nil {
-		// return nil,fmt.Errorf("failed to decode artists %#v", err)
-		// fmt.Errorf("failed to decode artists %#v", err)
-		return nil,err
+		return nil,fmt.Errorf("failed to decode artists %#v", err)
 	}
+
 	return artists,nil
 }
 
-func FetchLocation(url string)([]locations,error) {
-	resp, err := http.Get(url)
+func FetchLocation()([]locations,error) {
+	resp, err := http.Get(Url+"locations")
 	if err != nil {
-		// return nil,fmt.Errorf("failed to fetch artist %#v", err)
-		fmt.Println(err)
+		return nil,fmt.Errorf("failed to fetch artist %#v", err)
 	}
 	defer resp.Body.Close()
-	fmt.Println(resp.Body)
 	var location locationResponse
 	// Decode the JSON response into the artists slice
 	err = json.NewDecoder(resp.Body).Decode(&location)
 	if err != nil {
-		// return nil,fmt.Errorf("failed to decode artists %#v", err)
-		// fmt.Errorf("failed to decode artists %#v", err)
-		return nil,err
+		return nil,fmt.Errorf("failed to decode artists %#v", err)
 	}
 	return location.Index,nil
 }
 
-// FetchArtists fetches the list of artists from the external API.// 	resp, err := http.Get(Url)
+func fetchDates()([]Dates,error){
 
-func fetchDates(url string)[]Dates{
-
-	resp, err := http.Get(url)
+	resp, err := http.Get(Url+"dates")
 	if err != nil{
-		// return nil,fmt.Errorf("failed to fetch artist %#v", err)
+		return nil,fmt.Errorf("failed to fetch artist %#v", err)
 	}
 	defer resp.Body.Close()
 	var dates DatesResponse
 	// Decode the JSON response into the artists slice
 	err = json.NewDecoder(resp.Body).Decode(&dates)
-	// if err != nil{
-	// 	// return nil,fmt.Errorf("failed to decode artists %#v", err)
-	// 	// fmt.Println(err)23
-	// 	return err
-	// }
-	// return artists,nil
-	return dates.Index
+	if err != nil{
+		return nil,fmt.Errorf("failed to decode artists %#v", err)
+	}
+	return dates.Index,nil
+}
+
+
+func FetchRelation()([]Relation,error) {
+	resp, err := http.Get(Url + "relation")
+	if err != nil {
+		return nil,fmt.Errorf("failed to fetch artist %#v", err)
+	}
+	defer resp.Body.Close()
+	var relation RelationResponse
+	// Decode the JSON response into the artists slice
+	err = json.NewDecoder(resp.Body).Decode(&relation)
+	if err != nil {
+		return nil,fmt.Errorf("failed to decode artists %#v", err)
+	}
+	return relation.Index,nil
 }
 
 func main(){
-	const Urldt = "https://groupietrackers.herokuapp.com/api/dates"
-	const Urllc = "https://groupietrackers.herokuapp.com/api/locations"
-	const Url = "https://groupietrackers.herokuapp.com/api/artists"
-	fmt.Println(FetchArtists(Url))
-	fmt.Println(fetchDates(Urldt))
-	fmt.Println(FetchLocation(Urllc))
+	// fmt.Println(FetchRelation())
+	// fmt.Println(fetchDates())
+	fmt.Println(FetchArtists())
+	// fmt.Println(FetchLocation())
 }
