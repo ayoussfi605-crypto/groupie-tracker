@@ -4,26 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
 )
 
 const Url = "https://groupietrackers.herokuapp.com/api/"
 
 type Artist struct {
-	ID             int    
-	Image          string  ` json:"image"`
-	Name           string   `json:"name"`
-	Members        []string `json:"members"`
-	CreationDate   int      `json:"creationDate"`
-	FirstAlbum     string   `json:"firstAlbum"`
+	ID           int
+	Image        string   `json:"image"`
+	Name         string   `json:"name"`
+	Members      []string `json:"members"`
+	CreationDate int      `json:"creationDate"`
+	FirstAlbum   string   `json:"firstAlbum"`
 }
 
-type locations struct {
+type Locations struct {
 	ID        int      `json:"id"`
 	Locations []string `json:"locations"`
 }
-type locationResponse struct {
-	Index []locations `json:"index"`
+type LocationResponse struct {
+	Index []Locations `json:"index"`
 }
 
 type Dates struct {
@@ -35,82 +34,54 @@ type DatesResponse struct {
 	Index []Dates `json:"index"`
 }
 
-
 type Relation struct {
-	ID             int                ` json:"id"`
+	ID             int                 `json:"id"`
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
 type RelationResponse struct {
 	Index []Relation `json:"index"`
 }
+
+func fetch(endpoint string, target interface{}) error {
+	resp, err := http.Get(Url + endpoint)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+	// Decode the JSON response into the artists slice
+	return json.NewDecoder(resp.Body).Decode(target)
+}
+
 // FetchArtists fetches the list of artists from the external API.
-func FetchArtists()([]Artist,error) {
-	resp, err := http.Get(Url+"artists")
-	if err != nil {
-		return nil,fmt.Errorf("failed to fetch artist %#v", err)
-	}
-	defer resp.Body.Close()
+func FetchArtists() ([]Artist, error) {
+
 	var artists []Artist
-	// Decode the JSON response into the artists slice
-	err = json.NewDecoder(resp.Body).Decode(&artists)
-	if err != nil {
-		return nil,fmt.Errorf("failed to decode artists %#v", err)
-	}
-
-	return artists,nil
+	err := fetch("artists",&artists)
+	return artists, err
 }
 
-func FetchLocation()([]locations,error) {
-	resp, err := http.Get(Url+"locations")
-	if err != nil {
-		return nil,fmt.Errorf("failed to fetch artist %#v", err)
-	}
-	defer resp.Body.Close()
-	var location locationResponse
-	// Decode the JSON response into the artists slice
-	err = json.NewDecoder(resp.Body).Decode(&location)
-	if err != nil {
-		return nil,fmt.Errorf("failed to decode artists %#v", err)
-	}
-	return location.Index,nil
+func FetchLocations() ([]Locations, error) {
+
+	var location LocationResponse
+	err := fetch("locations",&location)
+	return location.Index, err
 }
 
-func fetchDates()([]Dates,error){
-
-	resp, err := http.Get(Url+"dates")
-	if err != nil{
-		return nil,fmt.Errorf("failed to fetch artist %#v", err)
-	}
-	defer resp.Body.Close()
+func FetchDates() ([]Dates, error) {
+	
 	var dates DatesResponse
-	// Decode the JSON response into the artists slice
-	err = json.NewDecoder(resp.Body).Decode(&dates)
-	if err != nil{
-		return nil,fmt.Errorf("failed to decode artists %#v", err)
-	}
-	return dates.Index,nil
+	err := fetch("dates",&dates)
+	return dates.Index, err
 }
 
+func FetchRelation() ([]Relation, error) {
 
-func FetchRelation()([]Relation,error) {
-	resp, err := http.Get(Url + "relation")
-	if err != nil {
-		return nil,fmt.Errorf("failed to fetch artist %#v", err)
-	}
-	defer resp.Body.Close()
 	var relation RelationResponse
-	// Decode the JSON response into the artists slice
-	err = json.NewDecoder(resp.Body).Decode(&relation)
-	if err != nil {
-		return nil,fmt.Errorf("failed to decode artists %#v", err)
-	}
-	return relation.Index,nil
+	err := fetch("relation", &relation)
+	return relation.Index, err
 }
 
-func main(){
-	// fmt.Println(FetchRelation())
-	// fmt.Println(fetchDates())
-	fmt.Println(FetchArtists())
-	// fmt.Println(FetchLocation())
-}
