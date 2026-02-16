@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>groupie-tracker</title>
+</head>
+<body>
+    <h1>groupie-tracker</h1>
+      <div class="container">
+{{range .}}
+<div class="card">
+    <img src="{{.Image}}">
+
+    <h3>{{.Name}}</h3>
+
+    <form action="/artist" method="GET">
+        <input type="hidden" name="id" value="{{.ID}}">
+        <button type="submit">View Details</button>
+    </form>
+</div>
+{{end}}
+    </div>
+</body>
+</html>

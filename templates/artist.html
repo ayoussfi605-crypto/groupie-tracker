@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{.Name}}</title>
+</head>
+<body>
+    <img src="{{.Image}}">
+     <h3>{{.Name}}</h3>
+<h3>Locations:</h3>
+<ul>
+    {{range .Locations}}
+        <li>{{.}}</li>
+    {{end}}
+</ul>
+
+<h3>Concert Dates:</h3>
+<ul>
+    {{range .Dates}}
+        <li>{{.}}</li>
+    {{end}}
+</ul>
+
+<h3>Relation (Location → Dates):</h3>
+<ul>
+    {{range $location, $dates := .Relations}}
+        <li>
+            <strong>{{$location}}</strong>
+            <ul>
+                {{range $dates}}
+                    <li>{{.}}</li>
+                {{end}}
+            </ul>
+        </li>
+    {{end}}
+</ul>
+
+
+</body>
+</html>
