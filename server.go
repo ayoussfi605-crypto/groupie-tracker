@@ -1,18 +1,27 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 )
 
 var artistsCache []ArtistView
 
+var (
+	Tmpl    = template.Must(template.ParseFiles("templates/index.html"))
+	Tmplart = template.Must(template.ParseFiles("templates/artist.html"))
+	Tmplerr = template.Must(template.ParseFiles("templates/error.html"))
+)
+
 func main() {
 	err := LoadArtists()
 	if err != nil {
 		log.Fatal("Failed to load data:", err)
+		return
 	}
 	fs := http.FileServer(http.Dir("static"))
+
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", homeHandler)

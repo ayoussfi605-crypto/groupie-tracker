@@ -1,6 +1,8 @@
 package main
 
-import "groupie-tracker/fetch"
+import (
+	"groupie-tracker/fetch"
+)
 
 type ArtistView struct {
 	ID           int
@@ -20,7 +22,6 @@ type ErrorData struct {
 }
 
 func LoadArtists() error {
-
 	artists, err := fetch.FetchArtists()
 	if err != nil {
 		return err
@@ -48,6 +49,9 @@ func LoadArtists() error {
 		var lastActivity string
 		if len(dates[i].Dates) > 0 {
 			lastActivity = dates[i].Dates[len(dates[i].Dates)-1]
+			if len(lastActivity) > 10 {
+				lastActivity = lastActivity[1:]
+			}
 		}
 
 		view := ArtistView{

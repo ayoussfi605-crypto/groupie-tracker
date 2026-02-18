@@ -48,15 +48,18 @@ func fetch(endpoint string, target interface{}) error {
 	if err != nil {
 		return err
 	}
+	// Must close the body to prevent resource leaks
 	defer resp.Body.Close()
+	// Check status code first
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("bad status: %s", resp.Status)
 	}
 	// Decode the JSON response into the artists slice
+	// creat a new reader or decoder can read and andrstand the json text
 	return json.NewDecoder(resp.Body).Decode(target)
 }
 
-// FetchArtists fetches the list of artists from the external API.
+//FetchArtists fetches the list of artists from the external API.
 func FetchArtists() ([]Artist, error) {
 
 	var artists []Artist
