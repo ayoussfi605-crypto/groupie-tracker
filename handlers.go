@@ -37,6 +37,11 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.URL.Path != "/" {
+		HandleError(w, 404, "Page Not Found")
+		return
+	}
+
 	if !testApi(artistsCache[0].Image) {
 		HandleError(w, http.StatusInternalServerError, "internal server error")
 		return
