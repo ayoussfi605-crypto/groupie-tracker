@@ -189,3 +189,13 @@ body {
     line-height: 1.5;
 }
 
+/* Very small phones */
+@media (max-width: 360px) {
+  .card img {
+    height: 160px;
+  }
+
+  .btn {
+    padding: 9px 14px;
+  }
+}
